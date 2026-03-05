@@ -1,7 +1,15 @@
 :root{
   --bg:#070816;
+
+  /* ✅ SOLIDOS (sin transparencias raras en paneles importantes) */
+  --panelSolid:#0c1024;     /* panel principal */
+  --panelSolid2:#0a0d1e;    /* inputs / panel interno */
+  --headerSolid:#0b0f22;    /* headers: topbar/chat-header */
+
+  /* (dejamos tus variables viejas por compatibilidad, pero ya NO las usamos en paneles clave) */
   --panel:rgba(255,255,255,.06);
   --panel2:rgba(0,0,0,.22);
+
   --border:rgba(255,255,255,.12);
   --text:rgba(255,255,255,.92);
   --muted:rgba(255,255,255,.65);
@@ -19,6 +27,9 @@
   box-sizing:border-box;
   -webkit-tap-highlight-color: transparent;
 }
+
+/* ✅ ESTE ERA EL DETALLE QUE FALTABA */
+body.no-scroll{ overflow:hidden; }
 
 /* Base */
 html,body{height:100%}
@@ -63,11 +74,11 @@ a{color:#c4b5fd}
   gap:12px;
   padding:14px 16px;
 
-  /* ✅ SOLO ARRIBA: morado/cyan */
+  /* ✅ SOLO ARRIBA: morado/cyan + ✅ BASE SOLIDA */
   background:
     radial-gradient(900px 260px at 18% 0%, rgba(139,92,246,.20), transparent 60%),
     radial-gradient(900px 260px at 88% 0%, rgba(56,189,248,.14), transparent 60%),
-    var(--panel);
+    var(--panelSolid);
 
   border:1px solid var(--border);
   border-radius:18px;
@@ -146,14 +157,13 @@ a{color:#c4b5fd}
 .overlay{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.55);
-  backdrop-filter: blur(6px);
+  background:rgba(0,0,0,.62); /* ✅ sólido */
   z-index:40;
 }
 
 /* Sidebar */
 .sidebar{
-  background:var(--panel);
+  background:var(--panelSolid); /* ✅ sólido */
   border:1px solid var(--border);
   border-radius:18px;
   box-shadow:var(--shadow);
@@ -163,7 +173,15 @@ a{color:#c4b5fd}
   min-height:72vh;
 }
 
-.side-top{padding:14px;border-bottom:1px solid var(--border)}
+/* ✅ sticky para que el buscador y título no se pierdan */
+.side-top{
+  padding:14px;
+  border-bottom:1px solid var(--border);
+  position:sticky;
+  top:0;
+  z-index:5;
+  background:var(--headerSolid);
+}
 
 .search input{
   width:100%;
@@ -171,13 +189,13 @@ a{color:#c4b5fd}
   padding:10px 12px;
   border-radius:14px;
   border:1px solid var(--border);
-  background:var(--panel2);
+  background:var(--panelSolid2); /* ✅ sólido */
   color:var(--text);
   outline:none;
 }
 .search input::placeholder{color:rgba(255,255,255,.45)}
 
-.chat-list{padding:10px;overflow:auto;flex:1}
+.chat-list{padding:10px;overflow:auto;flex:1;min-height:0}
 
 .chat-item{
   width:100%;
@@ -187,7 +205,7 @@ a{color:#c4b5fd}
   border:1px solid transparent;
   cursor:pointer;
   margin-bottom:10px;
-  background:rgba(0,0,0,.14);
+  background:rgba(0,0,0,.22);
   color:var(--text);
   transition: transform .12s ease, border-color .12s ease, filter .12s ease, background .12s ease;
 }
@@ -199,15 +217,19 @@ a{color:#c4b5fd}
 .chat-item:active{transform: translateY(0px) scale(.99)}
 .chat-item.active{
   border-color:rgba(139,92,246,.35);
-  background:rgba(139,92,246,.12);
+  background:rgba(139,92,246,.16);
 }
 
-.side-bottom{padding:14px;border-top:1px solid var(--border)}
+.side-bottom{
+  padding:14px;
+  border-top:1px solid var(--border);
+  background:var(--headerSolid);
+}
 .hint{margin:10px 0 0;color:var(--muted);font-size:12px;line-height:1.3}
 
 /* Chat area */
 .chat-area{
-  background:var(--panel);
+  background:var(--panelSolid);
   border:1px solid var(--border);
   border-radius:18px;
   box-shadow:var(--shadow);
@@ -226,8 +248,13 @@ a{color:#c4b5fd}
   justify-content:space-between;
   align-items:center;
   gap:10px;
-  background:rgba(0,0,0,.12);
+
+  background:var(--headerSolid);
+  position:sticky;
+  top:0;
+  z-index:10;
 }
+
 .chat-title{display:flex;align-items:center;gap:10px}
 
 .icon-btn{
@@ -257,7 +284,8 @@ a{color:#c4b5fd}
   flex:1;
   overflow:auto;
   padding:14px;
-  background: rgba(0,0,0,.22);
+  background: #080a18;
+  min-height:0;
 }
 
 /* Messages */
@@ -276,7 +304,7 @@ a{color:#c4b5fd}
   background:rgba(255,255,255,.06);
   color:var(--text);
 }
-.msg.user .bubble{border-color:rgba(139,92,246,.25);background:rgba(139,92,246,.14)}
+.msg.user .bubble{border-color:rgba(139,92,246,.25);background:rgba(139,92,246,.16)}
 .msg.ai .bubble{border-color:rgba(56,189,248,.18);background:rgba(255,255,255,.06)}
 
 /* Composer */
@@ -285,7 +313,7 @@ a{color:#c4b5fd}
   gap:10px;
   padding:12px;
   border-top:1px solid var(--border);
-  background:rgba(0,0,0,.12);
+  background:var(--headerSolid);
 }
 
 textarea{
@@ -294,20 +322,20 @@ textarea{
   padding:10px 12px;
   border-radius:14px;
   border:1px solid var(--border);
-  background:rgba(0,0,0,.18);
+  background:var(--panelSolid2);
   color:var(--text);
   outline:none;
-  overflow:hidden; /* ✅ quita scroll feo del textarea */
+  overflow:hidden;
 }
 textarea::placeholder{color:rgba(255,255,255,.45)}
 textarea:focus{border-color:rgba(139,92,246,.35)}
 
 /* =========================
-   MODAL
+   MODAL (LOGIN SOLIDO)
 ========================= */
 .modal{
   position:fixed; inset:0;
-  background:rgba(0,0,0,.6);
+  background:rgba(0,0,0,.70);
   display:flex; align-items:center; justify-content:center;
   padding:18px;
   z-index:60;
@@ -344,7 +372,7 @@ input{
   padding:10px 12px;
   border-radius:14px;
   border:1px solid var(--border);
-  background:rgba(0,0,0,.22);
+  background:var(--panelSolid2);
   color:var(--text);
   outline:none;
 }
@@ -353,209 +381,12 @@ input:focus{border-color:rgba(56,189,248,.35)}
 .err{color:#fca5a5;margin-top:10px;min-height:18px}
 
 /* =========================
-   LANDING (index)
-========================= */
-.nav{display:flex;gap:12px;align-items:center}
-.nav-link{
-  color:var(--muted);
-  text-decoration:none;
-  font-size:13px;
-  padding:8px 10px;
-  border-radius:12px;
-  border:1px solid transparent;
-}
-.nav-link:hover{color:var(--text); border-color:rgba(255,255,255,.12); background:rgba(0,0,0,.12)}
-
-.hero{
-  margin-top:14px;
-  display:grid;
-  grid-template-columns: 1.1fr .9fr;
-  gap:14px;
-  align-items:stretch;
-
-  /* ✅ morado solo arriba en landing */
-  background:
-    radial-gradient(1200px 520px at 18% 0%, rgba(139,92,246,.18), transparent 60%),
-    radial-gradient(1000px 520px at 90% 0%, rgba(56,189,248,.12), transparent 60%);
-  border-radius:18px;
-}
-
-.badge{
-  display:inline-flex;
-  gap:8px;
-  align-items:center;
-  border:1px solid rgba(255,255,255,.12);
-  background:rgba(0,0,0,.18);
-  color:var(--muted);
-  padding:8px 10px;
-  border-radius:999px;
-  font-size:12px;
-}
-
-.hero-title{
-  margin:14px 0 8px;
-  font-size:42px;
-  line-height:1.05;
-  letter-spacing:-.02em;
-}
-.grad{
-  background: linear-gradient(135deg, rgba(139,92,246,1), rgba(56,189,248,1));
-  -webkit-background-clip:text;
-  background-clip:text;
-  color:transparent;
-}
-.hero-sub{
-  margin:0;
-  color:var(--muted);
-  font-size:15px;
-  line-height:1.5;
-  max-width:60ch;
-}
-
-.hero-cta{display:flex;gap:10px;align-items:center;margin-top:14px;flex-wrap:wrap}
-
-.hero-notes{
-  margin-top:14px;
-  display:grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap:10px;
-}
-.note{
-  border:1px solid rgba(255,255,255,.12);
-  background:rgba(0,0,0,.12);
-  padding:12px;
-  border-radius:16px;
-}
-.note-title{font-weight:800;font-size:13px}
-.note-text{color:var(--muted);font-size:12px;margin-top:6px;line-height:1.35}
-
-.card{
-  border:1px solid rgba(255,255,255,.12);
-  border-radius:18px;
-  padding:14px;
-  box-shadow:var(--shadow);
-}
-.glass{
-  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.12));
-}
-.card-head{display:flex;gap:10px;align-items:center}
-.card-dot{
-  width:10px;height:10px;border-radius:999px;
-  background:var(--accent2);
-  box-shadow: 0 0 0 6px rgba(56,189,248,.14);
-}
-.card-title{font-weight:900}
-.card-sub{color:var(--muted);font-size:12px;margin-top:2px}
-
-.demo{margin-top:12px;display:flex;flex-direction:column;gap:10px}
-.demo-bubble{
-  padding:10px 12px;
-  border-radius:16px;
-  border:1px solid rgba(255,255,255,.12);
-  background:rgba(0,0,0,.14);
-  max-width: 95%;
-}
-.demo-bubble.user{align-self:flex-end;border-color:rgba(139,92,246,.24);background:rgba(139,92,246,.12)}
-.demo-bubble.ai{align-self:flex-start;border-color:rgba(56,189,248,.20)}
-
-.card-foot{margin-top:12px}
-.section{
-  margin-top:18px;
-  padding:16px;
-  border:1px solid rgba(255,255,255,.12);
-  background:rgba(255,255,255,.04);
-  border-radius:18px;
-  box-shadow: var(--shadow);
-}
-.section-title{margin:0;font-size:20px}
-.section-sub{margin:6px 0 0;color:var(--muted);font-size:13px}
-
-.grid3{margin-top:14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-.grid2{margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.grid4{margin-top:14px;display:grid;grid-template-columns:repeat(4, 1fr);gap:12px}
-
-.feature{
-  padding:14px;
-  border-radius:18px;
-  border:1px solid rgba(255,255,255,.12);
-  background:rgba(0,0,0,.12);
-}
-.ico{font-size:20px}
-.feature-title{margin-top:8px;font-weight:900}
-.feature-text{margin-top:6px;color:var(--muted);font-size:13px;line-height:1.4}
-
-.panel{
-  padding:14px;
-  border-radius:18px;
-  border:1px solid rgba(255,255,255,.12);
-  background:rgba(0,0,0,.12);
-}
-.panel.warn{border-color:rgba(239,68,68,.28); background:rgba(239,68,68,.08)}
-.panel.soft{margin-top:12px;background:rgba(139,92,246,.08);border-color:rgba(139,92,246,.22)}
-
-.list{margin:10px 0 0;padding-left:18px;color:var(--muted);line-height:1.6}
-
-.plan{
-  padding:14px;
-  border-radius:18px;
-  border:1px solid rgba(255,255,255,.12);
-  background:rgba(0,0,0,.12);
-}
-.plan.best{
-  border-color:rgba(139,92,246,.35);
-  background:rgba(139,92,246,.10);
-}
-.plan-name{font-weight:900}
-.plan-price{margin-top:6px;font-size:22px;font-weight:900}
-.plan-desc{margin-top:6px;color:var(--muted);font-size:13px;margin-bottom:12px}
-
-.faq{margin-top:12px;display:flex;flex-direction:column;gap:10px}
-details{
-  border:1px solid rgba(255,255,255,.12);
-  background:rgba(0,0,0,.12);
-  border-radius:16px;
-  padding:12px;
-}
-summary{cursor:pointer;font-weight:800}
-details p{margin:8px 0 0}
-
-.footer{
-  margin-top:18px;
-  padding:14px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:12px;
-  border:1px solid rgba(255,255,255,.12);
-  background:rgba(0,0,0,.12);
-  border-radius:18px;
-  box-shadow: var(--shadow);
-}
-.footer-links{display:flex;gap:14px;flex-wrap:wrap}
-.footer-links a{color:var(--muted);text-decoration:none}
-.footer-links a:hover{color:var(--text)}
-.footer-title{font-weight:900}
-
-/* =========================
    RESPONSIVE
 ========================= */
-@media (max-width: 980px){
-  .hero{grid-template-columns:1fr}
-  .hero-title{font-size:34px}
-  .hero-notes{grid-template-columns:1fr}
-  .grid3{grid-template-columns:1fr}
-  .grid2{grid-template-columns:1fr}
-  .grid4{grid-template-columns:1fr 1fr}
-  .nav{display:none}
-}
-
 @media (max-width: 900px){
   .layout{grid-template-columns: 1fr;}
-
-  /* Botón ☰ visible */
   .icon-btn{display:inline-flex;align-items:center;justify-content:center}
 
-  /* Sidebar deslizable */
   .sidebar{
     position:fixed;
     top:18px;
@@ -580,8 +411,6 @@ details p{margin:8px 0 0}
 /* =========================
    PRO UPGRADES (Neura)
 ========================= */
-
-/* Halo suave del chat cuando está activo */
 .chat-area::before{
   content:"";
   position:absolute;
@@ -598,14 +427,12 @@ details p{margin:8px 0 0}
 .chat-area.is-active::before{opacity:1}
 .chat-area.is-active{border-color: rgba(139,92,246,.28)}
 
-/* Animación al aparecer un mensaje */
 @keyframes fadeUp{
   from{opacity:0; transform: translateY(8px) scale(.99)}
   to{opacity:1; transform: translateY(0px) scale(1)}
 }
 .msg.pop-in .bubble{animation: fadeUp .18s ease both}
 
-/* Indicador “pensando…” */
 .typing{
   display:flex;
   align-items:center;
@@ -642,38 +469,26 @@ details p{margin:8px 0 0}
   display:flex;
   flex-direction:column;
 }
-
-/* Topbar no crece */
 .app-page .topbar{ flex:0 0 auto; }
-
-/* El layout ocupa el resto y permite scroll interno */
 .app-page .layout{
   flex:1 1 auto;
-  min-height:0;         /* CLAVE */
+  min-height:0;
   align-items:stretch;
 }
-
-/* Encerrar sidebar */
 .app-page .sidebar{
-  min-height:0;         /* CLAVE */
+  min-height:0;
   height:100%;
 }
-
-/* Solo lista scrollea */
 .app-page .chat-list{
-  min-height:0;         /* CLAVE */
+  min-height:0;
   overflow:auto;
 }
-
-/* Encerrar chat */
 .app-page .chat-area{
-  min-height:0;         /* CLAVE */
+  min-height:0;
   height:100%;
 }
-
-/* Solo chat scrollea */
 .app-page .chat{
-  min-height:0;         /* CLAVE */
+  min-height:0;
   overflow:auto;
 }
 

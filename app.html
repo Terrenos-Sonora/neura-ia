@@ -4,84 +4,100 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Neura — App</title>
-  <link rel="stylesheet" href="/chat.css" />
-</head>
-<body>
-  <div class="neura-shell" id="shell">
 
-    <!-- SIDEBAR (tipo ChatGPT) -->
-    <aside class="neura-sidebar" id="sidebar">
-      <div class="sb-top">
-        <div class="sb-brand">
-          <div class="sb-logo">N</div>
-          <div class="sb-brand-text">
-            <div class="sb-name">Neura</div>
-            <div class="sb-sub">La IA que aprende de ti.</div>
+  <!-- ✅ usa el CSS nuevo -->
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+
+<!-- ✅ IMPORTANTÍSIMO para tu fix de scroll PC -->
+<body class="app-page">
+  <div class="app">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="brand mini">
+        <div class="logo sm">N</div>
+        <div>
+          <h1>Neura</h1>
+          <p>La IA que aprende de ti.</p>
+        </div>
+      </div>
+
+      <div class="actions">
+        <span id="status" class="pill">Invitado (sin memoria)</span>
+        <button id="btnLogin" class="btn" type="button">Iniciar sesión</button>
+        <button id="btnLogout" class="btn ghost hidden" type="button">Salir</button>
+      </div>
+    </header>
+
+    <!-- LAYOUT -->
+    <section class="layout">
+
+      <!-- SIDEBAR -->
+      <aside class="sidebar" id="sidebar" aria-label="Chats">
+        <div class="side-top">
+          <button class="btn primary full" id="btnNewChat" type="button">+ Nuevo chat</button>
+
+          <div class="search">
+            <input id="chatSearch" type="text" placeholder="Buscar chats…" />
           </div>
         </div>
 
-        <button class="sb-btn sb-primary" id="btnNewChat" type="button">+ Nuevo chat</button>
+        <!-- ✅ Scroll propio -->
+        <div id="chatList" class="chat-list" role="list"></div>
 
-        <div class="sb-search">
-          <input id="chatSearch" type="text" placeholder="Buscar chats…" />
+        <div class="side-bottom">
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button id="btnExport" class="btn ghost" type="button">Exportar</button>
+            <a class="btn ghost" href="/index.html">Inicio</a>
+          </div>
+
+          <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
+            <button id="btnClear" class="btn ghost" type="button">Borrar chat (local)</button>
+            <button id="btnDeleteCloud" class="btn danger hidden" type="button">Borrar chats guardados</button>
+          </div>
+
+          <p class="hint" id="hint">Modo invitado: al cerrar, no se guarda.</p>
+        </div>
+      </aside>
+
+      <!-- OVERLAY móvil -->
+      <div class="overlay hidden" id="overlay" aria-hidden="true"></div>
+
+      <!-- CHAT AREA -->
+      <main class="chat-area" id="chatArea" aria-label="Chat">
+        <div class="chat-header">
+          <!-- ✅ ESTE ES EL HAMBURGUESA REAL QUE TU app.js USA -->
+          <button class="icon-btn" id="btnToggleSidebar" type="button" aria-label="Menú">☰</button>
+
+          <div class="chat-title">
+            <span class="dot"></span>
+            <div>
+              <div id="openChatTitle" class="title">Chat principal</div>
+              <div id="openChatSub" class="sub">Escribe y presiona Enter</div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <span class="pill">Neura</span>
+          </div>
         </div>
 
-        <div class="sb-actions">
-          <span id="status" class="sb-pill">Invitado (sin memoria)</span>
-
-          <button id="btnLogin" class="sb-btn" type="button">Iniciar sesión</button>
-          <button id="btnLogout" class="sb-btn sb-ghost hidden" type="button">Salir</button>
-
-          <button id="btnExport" class="sb-btn sb-ghost" type="button">Exportar</button>
-          <a class="sb-btn sb-ghost" href="/index.html">Inicio</a>
-
-          <!-- Si luego quieres “Planes / Suscripción”, aquí va su botón -->
-          <!-- <a class="sb-btn sb-ghost" href="/planes.html">Planes</a> -->
-        </div>
-      </div>
-
-      <!-- LISTA CHATS (SCROLL PROPIO) -->
-      <div id="chatList" class="sb-chats"></div>
-
-      <!-- FOOTER / PERFIL -->
-      <div class="sb-bottom">
-        <button id="btnClear" class="sb-btn sb-ghost" type="button">Borrar chat (local)</button>
-        <button id="btnDeleteCloud" class="sb-btn sb-danger hidden" type="button">Borrar chats guardados</button>
-
-        <p class="sb-hint" id="hint">Modo invitado: al cerrar, no se guarda.</p>
-        <p class="sb-tip">Consejo: no compartas contraseñas ni datos sensibles.</p>
-      </div>
-    </aside>
-
-    <!-- OVERLAY para móvil -->
-    <div class="neura-overlay" id="overlay"></div>
-
-    <!-- MAIN CHAT -->
-    <main class="neura-main">
-      <!-- Top mini solo en móvil (limpio) -->
-      <div class="mobile-top">
-        <button class="menu-btn" id="btnMenu" type="button" aria-label="Menú">☰</button>
-        <div class="mobile-title">
-          <div id="openChatTitle" class="mt-title">Chat principal</div>
-          <div id="openChatSub" class="mt-sub">Escribe y presiona Enter</div>
-        </div>
-      </div>
-
-      <section class="chat-wrap">
+        <!-- ✅ Scroll propio del chat -->
         <div id="chat" class="chat"></div>
 
         <div class="composer">
           <textarea id="msg" rows="1" placeholder="Escribe aquí… (Enter = enviar, Shift+Enter = salto)"></textarea>
-          <button id="send" class="send" type="button">Enviar</button>
+          <button id="send" class="btn primary" type="button">Enviar</button>
         </div>
-      </section>
-    </main>
+      </main>
+    </section>
 
-    <!-- Modal Login (igual que el tuyo) -->
+    <!-- MODAL LOGIN -->
     <div id="modal" class="modal hidden" aria-hidden="true">
       <div class="modal-card">
         <div class="modal-head">
-          <h2>Iniciar sesión</h2>
+          <h2 style="margin:0;">Iniciar sesión</h2>
           <button id="closeModalX" class="x" type="button" aria-label="Cerrar">✕</button>
         </div>
 
@@ -107,29 +123,13 @@
         <p id="authErr" class="err"></p>
       </div>
     </div>
+
   </div>
 
   <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- Toggle menú móvil -->
-  <script>
-    (function(){
-      const shell = document.getElementById('shell');
-      const btn = document.getElementById('btnMenu');
-      const overlay = document.getElementById('overlay');
-      function open(){ shell.classList.add('sb-open'); }
-      function close(){ shell.classList.remove('sb-open'); }
-      btn && btn.addEventListener('click', open);
-      overlay && overlay.addEventListener('click', close);
-      // Cierra al cambiar tamaño a PC
-      window.addEventListener('resize', () => {
-        if (window.innerWidth > 900) close();
-      });
-    })();
-  </script>
-
   <!-- Tu app -->
-  <script type="module" src="/app.js" defer></script>
+  <script type="module" src="/app.js"></script>
 </body>
 </html>

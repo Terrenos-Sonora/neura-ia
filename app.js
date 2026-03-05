@@ -37,6 +37,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const passEl = $("pass");
   const authErr = $("authErr");
 
+  // ====== GUARDAS BÁSICAS (evita que se rompa si falta algo en HTML) ======
+  const must = (el, name) => {
+    if (!el) console.warn(`Falta en HTML el elemento con id="${name}"`);
+    return el;
+  };
+
+  must(chatEl, "chat");
+  must(msgEl, "msg");
+  must(sendBtn, "send");
+  must(chatList, "chatList");
+
   // ====== SUPABASE CLIENT ======
   let supa = null;
   if (window.supabase?.createClient) {
@@ -65,6 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
     sidebar.classList.add("sidebar-open");
     overlay.classList.remove("hidden");
     overlay.setAttribute("aria-hidden", "false");
+    document.body.classList.add("no-scroll"); // ✅ bloquea scroll body en móvil
   }
 
   function closeSidebar() {
@@ -72,9 +84,14 @@ document.addEventListener("DOMContentLoaded", () => {
     sidebar.classList.remove("sidebar-open");
     overlay.classList.add("hidden");
     overlay.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("no-scroll"); // ✅ regresa scroll
   }
 
+  // ✅ Asegurar estado inicial: cerrado
+  closeSidebar();
+
   btnToggleSidebar?.addEventListener("click", () => {
+    if (!sidebar) return;
     if (sidebar.classList.contains("sidebar-open")) closeSidebar();
     else openSidebar();
   });
@@ -89,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // ====== MODAL: abrir/cerrar ======
   function openModal() {
     if (!modal) return;
-    authErr.textContent = "";
+    if (authErr) authErr.textContent = "";
     modal.classList.remove("hidden");
     modal.style.display = "flex";
     modal.setAttribute("aria-hidden", "false");
@@ -123,28 +140,28 @@ document.addEventListener("DOMContentLoaded", () => {
   // ====== UI SEGÚN SESIÓN ======
   function setGuestUI() {
     session = null;
-    statusPill.textContent = "Invitado (sin memoria)";
-    hint.textContent = "Modo invitado: al cerrar, no se guarda.";
-    btnLogin.classList.remove("hidden");
-    btnLogout.classList.add("hidden");
+    if (statusPill) statusPill.textContent = "Invitado (sin memoria)";
+    if (hint) hint.textContent = "Modo invitado: al cerrar, no se guarda.";
+    btnLogin?.classList.remove("hidden");
+    btnLogout?.classList.add("hidden");
     btnDeleteCloud?.classList.add("hidden");
   }
 
   function setUserUI(userEmail) {
-    statusPill.textContent = `Conectado: ${userEmail}`;
-    hint.textContent = "Cuenta activa: (próximo) aquí guardaremos tu historial.";
-    btnLogin.classList.add("hidden");
-    btnLogout.classList.remove("hidden");
+    if (statusPill) statusPill.textContent = `Conectado: ${userEmail}`;
+    if (hint) hint.textContent = "Cuenta activa: (próximo) aquí guardaremos tu historial.";
+    btnLogin?.classList.add("hidden");
+    btnLogout?.classList.remove("hidden");
     btnDeleteCloud?.classList.remove("hidden");
   }
 
   // ====== AUTH REAL (Supabase) ======
   async function handleLogin() {
-    authErr.textContent = "";
+    if (authErr) authErr.textContent = "";
     if (!supa) return (authErr.textContent = "Supabase no cargó 😅 (revisa el CDN).");
 
-    const email = (emailEl.value || "").trim();
-    const password = (passEl.value || "").trim();
+    const email = (emailEl?.value || "").trim();
+    const password = (passEl?.value || "").trim();
     if (!email || !password) return (authErr.textContent = "Escribe email y contraseña.");
 
     const { data, error } = await supa.auth.signInWithPassword({ email, password });
@@ -156,11 +173,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function handleSignup() {
-    authErr.textContent = "";
+    if (authErr) authErr.textContent = "";
     if (!supa) return (authErr.textContent = "Supabase no cargó 😅 (revisa el CDN).");
 
-    const email = (emailEl.value || "").trim();
-    const password = (passEl.value || "").trim();
+    const email = (emailEl?.value || "").trim();
+    const password = (passEl?.value || "").trim();
     if (!email || !password) return (authErr.textContent = "Escribe email y contraseña.");
 
     const { data, error } = await supa.auth.signUp({ email, password });
@@ -193,6 +210,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderChatList() {
+    if (!chatList) return;
     const q = (chatSearch?.value || "").toLowerCase().trim();
     const items = chats
       .filter((c) => !q || c.title.toLowerCase().includes(q))
@@ -209,8 +227,7 @@ document.addEventListener("DOMContentLoaded", () => {
         openId = c.id;
         saveOpen(openId);
         render();
-        // en móvil: cerrar sidebar al elegir chat
-        closeSidebar();
+        closeSidebar(); // ✅ en móvil: se cierra al elegir chat
       });
 
       chatList.appendChild(btn);
@@ -218,11 +235,15 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderMessages(chat) {
+    if (!chatEl) return;
     chatEl.innerHTML = "";
     for (const m of chat.messages) {
       chatEl.appendChild(bubble(m.role, m.content));
     }
-    chatEl.scrollTop = chatEl.scrollHeight;
+    // ✅ scroll al final sin brincar
+    requestAnimationFrame(() => {
+      chatEl.scrollTop = chatEl.scrollHeight;
+    });
   }
 
   function bubble(role, text) {
@@ -254,9 +275,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const c = {
       id: crypto.randomUUID(),
       title,
-      messages: [
-        { role: "assistant", content: "Hola 😊 Soy Neura. ¿En qué te ayudo hoy?", ts: now },
-      ],
+      messages: [{ role: "assistant", content: "Hola 😊 Soy Neura. ¿En qué te ayudo hoy?", ts: now }],
       createdAt: now,
       updatedAt: now,
     };
@@ -291,7 +310,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ====== ENVIAR MENSAJE ======
   async function send() {
-    const text = (msgEl.value || "").trim();
+    const text = (msgEl?.value || "").trim();
     if (!text) return;
 
     msgEl.value = "";
