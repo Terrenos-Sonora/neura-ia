@@ -24,8 +24,11 @@
       </div>
     </header>
 
-    <main class="layout">
-      <aside class="sidebar">
+    <main class="layout" id="layout">
+      <!-- Overlay móvil -->
+      <div id="overlay" class="overlay hidden" aria-hidden="true"></div>
+
+      <aside class="sidebar" id="sidebar" aria-label="Chats">
         <div class="side-top">
           <button id="btnNewChat" class="btn primary full" type="button">+ Nuevo chat</button>
 
@@ -47,10 +50,16 @@
         </div>
       </aside>
 
-      <section class="chat-area">
+      <section class="chat-area" id="chatArea">
         <div class="chat-header">
           <div class="chat-title">
+            <!-- Botón tipo ChatGPT (solo útil en móvil) -->
+            <button id="btnToggleSidebar" class="icon-btn" type="button" aria-label="Abrir chats">
+              ☰
+            </button>
+
             <span class="dot"></span>
+
             <div>
               <div id="openChatTitle" class="title">Chat principal</div>
               <div id="openChatSub" class="sub">Escribe y presiona Enter</div>
@@ -63,7 +72,7 @@
           </div>
         </div>
 
-        <div id="chat" class="chat"></div>
+        <div id="chat" class="chat" aria-live="polite"></div>
 
         <div class="composer">
           <textarea id="msg" rows="1" placeholder="Escribe aquí… (Enter = enviar, Shift+Enter = salto)"></textarea>

@@ -18,6 +18,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const hint = $("hint");
   const btnDeleteCloud = $("btnDeleteCloud");
 
+  // Layout móvil (sidebar tipo ChatGPT)
+  const sidebar = $("sidebar");
+  const overlay = $("overlay");
+  const btnToggleSidebar = $("btnToggleSidebar");
+  const chatArea = $("chatArea");
+
   // Modal
   const modal = $("modal");
   const btnLogin = $("btnLogin");
@@ -31,63 +37,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const passEl = $("pass");
   const authErr = $("authErr");
 
-  // ====== PRO UX (Halo + Thinking + Animación) ======
-  const chatArea = document.querySelector(".chat-area");
-  const composer = document.querySelector(".composer");
-
-  function setActiveChat(on) {
-    if (!chatArea) return;
-    chatArea.classList.toggle("is-active", !!on);
-  }
-
-  // Activamos el halo al usar el chat
-  setActiveChat(true);
-  composer?.addEventListener("click", () => setActiveChat(true));
-  msgEl?.addEventListener("focus", () => setActiveChat(true));
-
-  // Indicador "Neura está pensando..."
-  let typingEl = null;
-
-  function showTyping() {
-    if (!chatEl) return;
-    if (typingEl) return;
-
-    typingEl = document.createElement("div");
-    typingEl.className = "msg ai typing pop-in";
-    typingEl.innerHTML = `
-      <div class="bubble">
-        <span class="muted">Neura está pensando</span>
-        <span class="dots" aria-hidden="true">
-          <span></span><span></span><span></span>
-        </span>
-      </div>
-    `;
-    chatEl.appendChild(typingEl);
-    chatEl.scrollTop = chatEl.scrollHeight;
-  }
-
-  function hideTyping() {
-    if (typingEl && typingEl.parentNode) typingEl.parentNode.removeChild(typingEl);
-    typingEl = null;
-  }
-
-  // Animar SOLO el último mensaje renderizado
-  function popLastMessage() {
-    const last = chatEl?.lastElementChild;
-    if (!last) return;
-    last.classList.add("pop-in");
-  }
-
   // ====== SUPABASE CLIENT ======
   let supa = null;
   if (window.supabase?.createClient) {
     supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   } else {
-    console.warn("Supabase CDN no cargó. Revisa el script en index.html");
+    console.warn("Supabase CDN no cargó. Revisa el script en app.html");
   }
 
   // ====== ESTADO ======
-  // ✅ Limpio para Neura (nuevas keys)
   const LS_KEY = "neura_guest_chats_v1";
   const LS_OPEN = "neura_open_chat_v1";
 
@@ -101,12 +59,39 @@ document.addEventListener("DOMContentLoaded", () => {
     saveOpen(openId);
   }
 
-  // ====== MODAL: abrir/cerrar (INFALIBLE) ======
+  // ====== SIDEBAR (tipo ChatGPT) ======
+  function openSidebar() {
+    if (!sidebar || !overlay) return;
+    sidebar.classList.add("sidebar-open");
+    overlay.classList.remove("hidden");
+    overlay.setAttribute("aria-hidden", "false");
+  }
+
+  function closeSidebar() {
+    if (!sidebar || !overlay) return;
+    sidebar.classList.remove("sidebar-open");
+    overlay.classList.add("hidden");
+    overlay.setAttribute("aria-hidden", "true");
+  }
+
+  btnToggleSidebar?.addEventListener("click", () => {
+    if (sidebar.classList.contains("sidebar-open")) closeSidebar();
+    else openSidebar();
+  });
+
+  overlay?.addEventListener("click", closeSidebar);
+
+  // Cerrar sidebar al cambiar tamaño a desktop
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 900) closeSidebar();
+  });
+
+  // ====== MODAL: abrir/cerrar ======
   function openModal() {
     if (!modal) return;
     authErr.textContent = "";
     modal.classList.remove("hidden");
-    modal.style.display = "flex"; // respaldo (por si CSS falla)
+    modal.style.display = "flex";
     modal.setAttribute("aria-hidden", "false");
     setTimeout(() => emailEl?.focus(), 50);
   }
@@ -114,26 +99,24 @@ document.addEventListener("DOMContentLoaded", () => {
   function closeModal() {
     if (!modal) return;
     modal.classList.add("hidden");
-    modal.style.display = "none"; // respaldo (por si CSS falla)
+    modal.style.display = "none";
     modal.setAttribute("aria-hidden", "true");
   }
 
-  // NUNCA abrir solo al cargar
   closeModal();
 
   btnLogin?.addEventListener("click", openModal);
   closeModalX?.addEventListener("click", closeModal);
   closeModalBtn?.addEventListener("click", closeModal);
 
-  // click fuera (solo si das click en el fondo)
   modal?.addEventListener("click", (e) => {
     if (e.target === modal) closeModal();
   });
 
-  // ESC
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && modal && modal.getAttribute("aria-hidden") === "false") {
-      closeModal();
+    if (e.key === "Escape") {
+      if (modal && modal.getAttribute("aria-hidden") === "false") closeModal();
+      closeSidebar();
     }
   });
 
@@ -183,7 +166,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const { data, error } = await supa.auth.signUp({ email, password });
     if (error) return (authErr.textContent = error.message);
 
-    // A veces Supabase pide confirmación por email; lo mostramos bonito:
     if (!data.session) {
       authErr.textContent = "Cuenta creada ✅ Revisa tu correo para confirmar (si te lo pide).";
       return;
@@ -202,30 +184,6 @@ document.addEventListener("DOMContentLoaded", () => {
   doLogin?.addEventListener("click", handleLogin);
   doSignup?.addEventListener("click", handleSignup);
   btnLogout?.addEventListener("click", handleLogout);
-
-  // Al iniciar: revisar si ya hay sesión
-  (async () => {
-    if (!supa) {
-      setGuestUI();
-      render();
-      return;
-    }
-
-    const { data } = await supa.auth.getSession();
-    session = data.session;
-
-    if (session?.user?.email) setUserUI(session.user.email);
-    else setGuestUI();
-
-    // Escuchar cambios de auth
-    supa.auth.onAuthStateChange((_event, newSession) => {
-      session = newSession;
-      if (session?.user?.email) setUserUI(session.user.email);
-      else setGuestUI();
-    });
-
-    render();
-  })();
 
   // ====== CHAT: render ======
   function render() {
@@ -246,11 +204,15 @@ document.addEventListener("DOMContentLoaded", () => {
       btn.type = "button";
       btn.className = "chat-item" + (c.id === openId ? " active" : "");
       btn.textContent = c.title;
+
       btn.addEventListener("click", () => {
         openId = c.id;
         saveOpen(openId);
         render();
+        // en móvil: cerrar sidebar al elegir chat
+        closeSidebar();
       });
+
       chatList.appendChild(btn);
     }
   }
@@ -267,10 +229,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const wrap = document.createElement("div");
     wrap.className = "msg " + (role === "user" ? "user" : "ai");
 
+    // typing bonito si el texto es "…"
+    if (role !== "user" && text === "…") {
+      wrap.classList.add("typing");
+      const inner = document.createElement("div");
+      inner.className = "bubble";
+      inner.innerHTML = `<span class="muted">Pensando</span> <span class="dots"><span></span><span></span><span></span></span>`;
+      wrap.appendChild(inner);
+      return wrap;
+    }
+
     const inner = document.createElement("div");
     inner.className = "bubble";
     inner.textContent = text;
 
+    wrap.classList.add("pop-in");
     wrap.appendChild(inner);
     return wrap;
   }
@@ -281,7 +254,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const c = {
       id: crypto.randomUUID(),
       title,
-      messages: [{ role: "assistant", content: "Hola 😊 Soy Neura. ¿En qué te ayudo hoy?", ts: now }],
+      messages: [
+        { role: "assistant", content: "Hola 😊 Soy Neura. ¿En qué te ayudo hoy?", ts: now },
+      ],
       createdAt: now,
       updatedAt: now,
     };
@@ -312,7 +287,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     saveChats();
     renderMessages(c);
-    popLastMessage();
   }
 
   // ====== ENVIAR MENSAJE ======
@@ -323,11 +297,8 @@ document.addEventListener("DOMContentLoaded", () => {
     msgEl.value = "";
     autosize(msgEl);
 
-    // mensaje del usuario
     pushMessage("user", text);
-
-    // ✅ "Neura está pensando..." (ya NO guardamos "…")
-    showTyping();
+    pushMessage("assistant", "…");
 
     const c = getOpenChat();
 
@@ -345,7 +316,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const data = await res.json().catch(() => ({}));
 
-      hideTyping();
+      // quitar el "…"
+      if (
+        c.messages.length &&
+        c.messages[c.messages.length - 1].role === "assistant" &&
+        c.messages[c.messages.length - 1].content === "…"
+      ) {
+        c.messages.pop();
+      }
 
       const reply = data.reply || data.error || "Tuve un detalle técnico 😅";
       c.messages.push({ role: "assistant", content: reply, ts: Date.now() });
@@ -353,10 +331,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
       saveChats();
       renderMessages(c);
-      popLastMessage();
     } catch {
-      hideTyping();
-
+      if (
+        c.messages.length &&
+        c.messages[c.messages.length - 1].role === "assistant" &&
+        c.messages[c.messages.length - 1].content === "…"
+      ) {
+        c.messages.pop();
+      }
       c.messages.push({
         role: "assistant",
         content: "Ahorita tuve un detalle técnico 😅 (revisa que /api/chat exista en Pages).",
@@ -365,7 +347,6 @@ document.addEventListener("DOMContentLoaded", () => {
       c.updatedAt = Date.now();
       saveChats();
       renderMessages(c);
-      popLastMessage();
     }
   }
 
@@ -378,6 +359,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // glow del chat cuando escribes
+  msgEl?.addEventListener("focus", () => chatArea?.classList.add("is-active"));
+  msgEl?.addEventListener("blur", () => chatArea?.classList.remove("is-active"));
+
   msgEl?.addEventListener("input", () => autosize(msgEl));
   autosize(msgEl);
 
@@ -387,6 +372,7 @@ document.addEventListener("DOMContentLoaded", () => {
     openId = c.id;
     saveOpen(openId);
     render();
+    closeSidebar();
   });
 
   btnClear?.addEventListener("click", () => {
@@ -399,7 +385,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   btnExport?.addEventListener("click", () => {
     const c = getOpenChat();
-    const lines = c.messages.map((m) => `${m.role === "user" ? "Tú" : "IA"}: ${m.content}`);
+    const lines = c.messages.map((m) => `${m.role === "user" ? "Tú" : "Neura"}: ${m.content}`);
     const blob = new Blob([lines.join("\n\n")], { type: "text/plain;charset=utf-8" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
@@ -434,4 +420,27 @@ document.addEventListener("DOMContentLoaded", () => {
     el.style.height = "auto";
     el.style.height = Math.min(el.scrollHeight, 140) + "px";
   }
+
+  // ====== INIT AUTH ======
+  (async () => {
+    if (!supa) {
+      setGuestUI();
+      render();
+      return;
+    }
+
+    const { data } = await supa.auth.getSession();
+    session = data.session;
+
+    if (session?.user?.email) setUserUI(session.user.email);
+    else setGuestUI();
+
+    supa.auth.onAuthStateChange((_event, newSession) => {
+      session = newSession;
+      if (session?.user?.email) setUserUI(session.user.email);
+      else setGuestUI();
+    });
+
+    render();
+  })();
 });
