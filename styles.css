@@ -1,12 +1,12 @@
 :root{
   --bg:#070816;
 
-  /* ✅ SOLIDOS (sin transparencias raras en paneles importantes) */
-  --panelSolid:#0c1024;     /* panel principal */
-  --panelSolid2:#0a0d1e;    /* inputs / panel interno */
-  --headerSolid:#0b0f22;    /* headers: topbar/chat-header */
+  /* ✅ SÓLIDOS (paneles importantes sin transparencia) */
+  --panelSolid:#0c1024;
+  --panelSolid2:#0a0d1e;
+  --headerSolid:#0b0f22;
 
-  /* (dejamos tus variables viejas por compatibilidad, pero ya NO las usamos en paneles clave) */
+  /* Compat */
   --panel:rgba(255,255,255,.06);
   --panel2:rgba(0,0,0,.22);
 
@@ -14,46 +14,30 @@
   --text:rgba(255,255,255,.92);
   --muted:rgba(255,255,255,.65);
 
-  /* Neura theme */
-  --accent:#8b5cf6;   /* violeta */
-  --accent2:#38bdf8;  /* cyan */
+  --accent:#8b5cf6;
+  --accent2:#38bdf8;
   --danger:#ef4444;
 
   --shadow:0 28px 90px rgba(0,0,0,.55);
   --glow: 0 0 0 6px rgba(139,92,246,.16);
 }
 
-*{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* ✅ ESTE ERA EL DETALLE QUE FALTABA */
-body.no-scroll{ overflow:hidden; }
-
-/* Base */
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
 body{
   margin:0;
   font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  background: var(--bg);
+  background:var(--bg);
   color:var(--text);
 }
-
 a{color:#c4b5fd}
 .muted{color:var(--muted)}
 .small{font-size:12px}
 .tiny{font-size:12px}
+.hidden{display:none !important}
 
-/* Containers */
-.app{max-width:1200px;margin:18px auto;padding:0 14px}
-.shell{max-width:1200px;margin:18px auto;padding:0 14px}
-
-/* Scrollbars (bonitos) */
-*{
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255,255,255,.18) transparent;
-}
+/* Scrollbars modernos */
+*{scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.18) transparent}
 *::-webkit-scrollbar{width:10px;height:10px}
 *::-webkit-scrollbar-track{background:transparent}
 *::-webkit-scrollbar-thumb{
@@ -64,8 +48,12 @@ a{color:#c4b5fd}
 }
 *::-webkit-scrollbar-thumb:hover{background: rgba(255,255,255,.22)}
 
+/* Containers */
+.shell{max-width:1200px;margin:18px auto;padding:0 14px}
+
 /* =========================
-   TOPBAR
+   COMPONENTES COMPARTIDOS
+   (Landing + App pueden usarlos)
 ========================= */
 .topbar{
   display:flex;
@@ -74,7 +62,6 @@ a{color:#c4b5fd}
   gap:12px;
   padding:14px 16px;
 
-  /* ✅ SOLO ARRIBA: morado/cyan + ✅ BASE SOLIDA */
   background:
     radial-gradient(900px 260px at 18% 0%, rgba(139,92,246,.20), transparent 60%),
     radial-gradient(900px 260px at 88% 0%, rgba(56,189,248,.14), transparent 60%),
@@ -112,7 +99,6 @@ a{color:#c4b5fd}
   color:var(--muted);
 }
 
-/* Buttons */
 .btn{
   border:1px solid var(--border);
   background:rgba(255,255,255,.06);
@@ -139,42 +125,219 @@ a{color:#c4b5fd}
 .danger{background:rgba(239,68,68,.18);border-color:rgba(239,68,68,.35)}
 .full{width:100%}
 
-/* Hidden */
-.hidden{display:none !important;}
+/* =========================
+   LANDING (index.html)
+   (esto es tu página principal)
+========================= */
+.nav{display:flex;gap:12px;align-items:center}
+.nav-link{
+  color:var(--muted);
+  text-decoration:none;
+  font-size:13px;
+  padding:8px 10px;
+  border-radius:12px;
+  border:1px solid transparent;
+}
+.nav-link:hover{color:var(--text); border-color:rgba(255,255,255,.12); background:rgba(0,0,0,.12)}
+
+.hero{
+  margin-top:14px;
+  display:grid;
+  grid-template-columns: 1.1fr .9fr;
+  gap:14px;
+  align-items:stretch;
+
+  background:
+    radial-gradient(1200px 520px at 18% 0%, rgba(139,92,246,.18), transparent 60%),
+    radial-gradient(1000px 520px at 90% 0%, rgba(56,189,248,.12), transparent 60%);
+  border-radius:18px;
+}
+
+.badge{
+  display:inline-flex;
+  gap:8px;
+  align-items:center;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(0,0,0,.18);
+  color:var(--muted);
+  padding:8px 10px;
+  border-radius:999px;
+  font-size:12px;
+}
+
+.hero-title{
+  margin:14px 0 8px;
+  font-size:42px;
+  line-height:1.05;
+  letter-spacing:-.02em;
+}
+.grad{
+  background: linear-gradient(135deg, rgba(139,92,246,1), rgba(56,189,248,1));
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+.hero-sub{
+  margin:0;
+  color:var(--muted);
+  font-size:15px;
+  line-height:1.5;
+  max-width:60ch;
+}
+
+.hero-cta{display:flex;gap:10px;align-items:center;margin-top:14px;flex-wrap:wrap}
+
+.hero-notes{
+  margin-top:14px;
+  display:grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap:10px;
+}
+.note{
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(0,0,0,.12);
+  padding:12px;
+  border-radius:16px;
+}
+.note-title{font-weight:800;font-size:13px}
+.note-text{color:var(--muted);font-size:12px;margin-top:6px;line-height:1.35}
+
+.card{
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:18px;
+  padding:14px;
+  box-shadow:var(--shadow);
+}
+.glass{
+  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.12));
+}
+.card-head{display:flex;gap:10px;align-items:center}
+.card-dot{
+  width:10px;height:10px;border-radius:999px;
+  background:var(--accent2);
+  box-shadow: 0 0 0 6px rgba(56,189,248,.14);
+}
+.card-title{font-weight:900}
+.card-sub{color:var(--muted);font-size:12px;margin-top:2px}
+
+.demo{margin-top:12px;display:flex;flex-direction:column;gap:10px}
+.demo-bubble{
+  padding:10px 12px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(0,0,0,.14);
+  max-width: 95%;
+}
+.demo-bubble.user{align-self:flex-end;border-color:rgba(139,92,246,.24);background:rgba(139,92,246,.12)}
+.demo-bubble.ai{align-self:flex-start;border-color:rgba(56,189,248,.20)}
+
+.card-foot{margin-top:12px}
+
+.section{
+  margin-top:18px;
+  padding:16px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.04);
+  border-radius:18px;
+  box-shadow: var(--shadow);
+}
+.section-title{margin:0;font-size:20px}
+.section-sub{margin:6px 0 0;color:var(--muted);font-size:13px}
+
+.grid3{margin-top:14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.grid2{margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid4{margin-top:14px;display:grid;grid-template-columns:repeat(4, 1fr);gap:12px}
+
+.feature{
+  padding:14px;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(0,0,0,.12);
+}
+.ico{font-size:20px}
+.feature-title{margin-top:8px;font-weight:900}
+.feature-text{margin-top:6px;color:var(--muted);font-size:13px;line-height:1.4}
+
+.panel{
+  padding:14px;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(0,0,0,.12);
+}
+.panel.warn{border-color:rgba(239,68,68,.28); background:rgba(239,68,68,.08)}
+.panel.soft{margin-top:12px;background:rgba(139,92,246,.08);border-color:rgba(139,92,246,.22)}
+
+.list{margin:10px 0 0;padding-left:18px;color:var(--muted);line-height:1.6}
+
+.plan{
+  padding:14px;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(0,0,0,.12);
+}
+.plan.best{
+  border-color:rgba(139,92,246,.35);
+  background:rgba(139,92,246,.10);
+}
+.plan-name{font-weight:900}
+.plan-price{margin-top:6px;font-size:22px;font-weight:900}
+.plan-desc{margin-top:6px;color:var(--muted);font-size:13px;margin-bottom:12px}
+
+.faq{margin-top:12px;display:flex;flex-direction:column;gap:10px}
+details{
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(0,0,0,.12);
+  border-radius:16px;
+  padding:12px;
+}
+summary{cursor:pointer;font-weight:800}
+details p{margin:8px 0 0}
+
+.footer{
+  margin-top:18px;
+  padding:14px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(0,0,0,.12);
+  border-radius:18px;
+  box-shadow: var(--shadow);
+}
+.footer-links{display:flex;gap:14px;flex-wrap:wrap}
+.footer-links a{color:var(--muted);text-decoration:none}
+.footer-links a:hover{color:var(--text)}
+.footer-title{font-weight:900}
 
 /* =========================
-   APP CHAT LAYOUT
+   APP (app.html)
+   ✅ encapsulado para NO romper landing
 ========================= */
-.layout{
+.neura-shell{
+  max-width:1200px;
+  margin:18px auto;
+  padding:0 14px;
+
   display:grid;
   grid-template-columns:320px 1fr;
   gap:14px;
-  margin-top:14px;
-  position:relative;
-}
 
-/* Overlay (móvil) */
-.overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.62); /* ✅ sólido */
-  z-index:40;
+  min-height:calc(100vh - 36px);
 }
 
 /* Sidebar */
-.sidebar{
-  background:var(--panelSolid); /* ✅ sólido */
+.neura-sidebar{
+  background:var(--panelSolid);
   border:1px solid var(--border);
   border-radius:18px;
   box-shadow:var(--shadow);
   overflow:hidden;
   display:flex;
   flex-direction:column;
-  min-height:72vh;
+  min-height:0;
 }
-
-/* ✅ sticky para que el buscador y título no se pierdan */
-.side-top{
+.sb-top{
   padding:14px;
   border-bottom:1px solid var(--border);
   position:sticky;
@@ -182,141 +345,134 @@ a{color:#c4b5fd}
   z-index:5;
   background:var(--headerSolid);
 }
+.sb-brand{display:flex;gap:12px;align-items:center}
+.sb-logo{
+  width:44px;height:44px;border-radius:14px;
+  display:grid;place-items:center;
+  font-weight:900;
+  background:linear-gradient(135deg, rgba(139,92,246,.35), rgba(56,189,248,.20));
+  border:1px solid rgba(255,255,255,.14);
+}
+.sb-name{font-weight:900}
+.sb-sub{color:var(--muted);font-size:12px;margin-top:2px}
 
-.search input{
+.sb-btn{
+  width:100%;
+  margin-top:10px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.06);
+  color:var(--text);
+  padding:10px 12px;
+  border-radius:14px;
+  cursor:pointer;
+  font-weight:650;
+  display:inline-flex;
+  justify-content:center;
+  align-items:center;
+  gap:8px;
+  text-decoration:none;
+}
+.sb-btn:hover{filter:brightness(1.10);transform:translateY(-1px)}
+.sb-btn:active{transform:translateY(0) scale(.98)}
+.sb-primary{background:rgba(139,92,246,.22);border-color:rgba(139,92,246,.35)}
+.sb-ghost{background:transparent}
+.sb-danger{background:rgba(239,68,68,.18);border-color:rgba(239,68,68,.35)}
+
+.sb-search input{
   width:100%;
   margin-top:10px;
   padding:10px 12px;
   border-radius:14px;
   border:1px solid var(--border);
-  background:var(--panelSolid2); /* ✅ sólido */
+  background:var(--panelSolid2);
   color:var(--text);
   outline:none;
 }
-.search input::placeholder{color:rgba(255,255,255,.45)}
+.sb-search input::placeholder{color:rgba(255,255,255,.45)}
 
-.chat-list{padding:10px;overflow:auto;flex:1;min-height:0}
-
-.chat-item{
-  width:100%;
-  text-align:left;
-  padding:10px 12px;
-  border-radius:14px;
-  border:1px solid transparent;
-  cursor:pointer;
-  margin-bottom:10px;
-  background:rgba(0,0,0,.22);
-  color:var(--text);
-  transition: transform .12s ease, border-color .12s ease, filter .12s ease, background .12s ease;
-}
-.chat-item:hover{
-  border-color:rgba(255,255,255,.14);
-  transform: translateY(-1px);
-  filter: brightness(1.06);
-}
-.chat-item:active{transform: translateY(0px) scale(.99)}
-.chat-item.active{
-  border-color:rgba(139,92,246,.35);
-  background:rgba(139,92,246,.16);
+.sb-actions{margin-top:10px;display:grid;gap:10px}
+.sb-pill{
+  display:inline-block;
+  padding:7px 10px;
+  border-radius:999px;
+  border:1px solid var(--border);
+  background:rgba(0,0,0,.18);
+  font-size:12px;
+  color:var(--muted);
 }
 
-.side-bottom{
+.sb-chats{
+  padding:10px;
+  overflow:auto;
+  flex:1;
+  min-height:0;
+}
+
+.sb-bottom{
   padding:14px;
   border-top:1px solid var(--border);
   background:var(--headerSolid);
 }
-.hint{margin:10px 0 0;color:var(--muted);font-size:12px;line-height:1.3}
+.sb-hint{margin:10px 0 0;color:var(--muted);font-size:12px;line-height:1.3}
+.sb-tip{margin:8px 0 0;color:rgba(255,255,255,.45);font-size:12px;line-height:1.3}
 
-/* Chat area */
-.chat-area{
+/* Overlay móvil */
+.neura-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.62);
+  z-index:40;
+  display:none;
+}
+
+/* Main */
+.neura-main{
   background:var(--panelSolid);
   border:1px solid var(--border);
   border-radius:18px;
   box-shadow:var(--shadow);
   overflow:hidden;
-  min-height:72vh;
   display:flex;
   flex-direction:column;
-  position:relative;
+  min-height:0;
 }
 
-/* Chat header */
-.chat-header{
+.mobile-top{
+  display:none;
   padding:12px 14px;
   border-bottom:1px solid var(--border);
-  display:flex;
-  justify-content:space-between;
+  background:var(--headerSolid);
   align-items:center;
   gap:10px;
-
-  background:var(--headerSolid);
-  position:sticky;
-  top:0;
-  z-index:10;
 }
-
-.chat-title{display:flex;align-items:center;gap:10px}
-
-.icon-btn{
-  width:40px;height:40px;
+.menu-btn{
+  width:44px;height:44px;
   border-radius:14px;
   border:1px solid var(--border);
   background:rgba(255,255,255,.06);
   color:var(--text);
   cursor:pointer;
-  display:none; /* solo móvil */
-  transition: transform .12s ease, filter .12s ease;
+  font-size:18px;
 }
-.icon-btn:hover{transform: translateY(-1px);filter: brightness(1.10)}
-.icon-btn:active{transform: translateY(0px) scale(.98)}
-.icon-btn:focus-visible{outline:2px solid rgba(56,189,248,.35);outline-offset:2px}
+.mt-title{font-weight:900}
+.mt-sub{color:var(--muted);font-size:12px;margin-top:2px}
 
-.dot{
-  width:10px;height:10px;border-radius:50%;
-  background:var(--accent);
-  box-shadow:var(--glow);
-}
-.title{font-weight:800;color:var(--text)}
-.sub{color:var(--muted);font-size:12px;margin-top:2px}
-
-/* Chat body */
-.chat{
+.chat-wrap{display:flex;flex-direction:column;min-height:0;flex:1}
+.neura-main .chat{
   flex:1;
   overflow:auto;
   padding:14px;
-  background: #080a18;
+  background:#080a18;
   min-height:0;
 }
-
-/* Messages */
-.msg{display:flex;margin:10px 0}
-.msg.user{justify-content:flex-end}
-.msg.ai{justify-content:flex-start}
-
-.bubble{
-  max-width:78%;
-  padding:11px 12px;
-  border-radius:16px;
-  line-height:1.35;
-  white-space:pre-wrap;
-  word-wrap:break-word;
-  border:1px solid var(--border);
-  background:rgba(255,255,255,.06);
-  color:var(--text);
-}
-.msg.user .bubble{border-color:rgba(139,92,246,.25);background:rgba(139,92,246,.16)}
-.msg.ai .bubble{border-color:rgba(56,189,248,.18);background:rgba(255,255,255,.06)}
-
-/* Composer */
-.composer{
+.neura-main .composer{
   display:flex;
   gap:10px;
   padding:12px;
   border-top:1px solid var(--border);
   background:var(--headerSolid);
 }
-
-textarea{
+.neura-main textarea{
   width:100%;
   resize:none;
   padding:10px 12px;
@@ -327,12 +483,20 @@ textarea{
   outline:none;
   overflow:hidden;
 }
-textarea::placeholder{color:rgba(255,255,255,.45)}
-textarea:focus{border-color:rgba(139,92,246,.35)}
+.neura-main textarea::placeholder{color:rgba(255,255,255,.45)}
+.send{
+  border:1px solid rgba(139,92,246,.35);
+  background:rgba(139,92,246,.22);
+  color:var(--text);
+  padding:10px 14px;
+  border-radius:14px;
+  cursor:pointer;
+  font-weight:800;
+}
+.send:hover{filter:brightness(1.10);transform:translateY(-1px)}
+.send:active{transform:translateY(0) scale(.98)}
 
-/* =========================
-   MODAL (LOGIN SOLIDO)
-========================= */
+/* Modal sólido (sirve en landing y app) */
 .modal{
   position:fixed; inset:0;
   background:rgba(0,0,0,.70);
@@ -347,11 +511,6 @@ textarea:focus{border-color:rgba(139,92,246,.35)}
   border-radius:18px;
   padding:16px;
   box-shadow:var(--shadow);
-  animation: popIn .14s ease;
-}
-@keyframes popIn{
-  from{transform: translateY(8px) scale(.98); opacity:.85}
-  to{transform: translateY(0px) scale(1); opacity:1}
 }
 .modal-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .x{
@@ -360,12 +519,7 @@ textarea:focus{border-color:rgba(139,92,246,.35)}
   background:rgba(255,255,255,.06);
   color:var(--text);
   cursor:pointer;
-  transition: transform .12s ease, filter .12s ease;
 }
-.x:hover{transform: translateY(-1px); filter: brightness(1.12)}
-.x:active{transform: translateY(0px) scale(.98)}
-.x:focus-visible{outline:2px solid rgba(56,189,248,.35);outline-offset:2px}
-
 .lab{display:block;margin-top:10px;margin-bottom:6px;color:var(--muted);font-size:13px}
 input{
   width:100%;
@@ -376,18 +530,29 @@ input{
   color:var(--text);
   outline:none;
 }
-input:focus{border-color:rgba(56,189,248,.35)}
 .row{display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap}
 .err{color:#fca5a5;margin-top:10px;min-height:18px}
 
 /* =========================
    RESPONSIVE
 ========================= */
-@media (max-width: 900px){
-  .layout{grid-template-columns: 1fr;}
-  .icon-btn{display:inline-flex;align-items:center;justify-content:center}
+@media (max-width: 980px){
+  .hero{grid-template-columns:1fr}
+  .hero-title{font-size:34px}
+  .hero-notes{grid-template-columns:1fr}
+  .grid3{grid-template-columns:1fr}
+  .grid2{grid-template-columns:1fr}
+  .grid4{grid-template-columns:1fr 1fr}
+  .nav{display:none}
+}
 
-  .sidebar{
+@media (max-width: 900px){
+  /* App */
+  .neura-shell{grid-template-columns:1fr}
+
+  .mobile-top{display:flex}
+
+  .neura-sidebar{
     position:fixed;
     top:18px;
     left:14px;
@@ -396,105 +561,43 @@ input:focus{border-color:rgba(56,189,248,.35)}
     z-index:50;
     transform: translateX(-110%);
     transition: transform .18s ease;
-    border-radius:18px;
   }
-  .sidebar.sidebar-open{transform: translateX(0%)}
 
-  .chat-area{min-height:72vh}
-}
-
-/* Reduce motion */
-@media (prefers-reduced-motion: reduce){
-  *{transition:none !important; animation:none !important}
+  /* cuando se abre */
+  .neura-shell.sb-open .neura-sidebar{transform: translateX(0%)}
+  .neura-shell.sb-open + .neura-overlay{display:block}
 }
 
-/* =========================
-   PRO UPGRADES (Neura)
-========================= */
-.chat-area::before{
-  content:"";
-  position:absolute;
-  inset:-2px;
-  border-radius:20px;
-  pointer-events:none;
-  opacity:0;
-  transition: opacity .18s ease;
-  background:
-    radial-gradient(800px 260px at 20% 0%, rgba(139,92,246,.22), transparent 60%),
-    radial-gradient(800px 260px at 90% 0%, rgba(56,189,248,.16), transparent 60%);
-  filter: blur(10px);
-}
-.chat-area.is-active::before{opacity:1}
-.chat-area.is-active{border-color: rgba(139,92,246,.28)}
+/* =========================================================
+   ✅ NEURA APP ENCERRADA (para no romper el index)
+   Esto hace que sidebar/chat tengan scroll propio.
+========================================================= */
+.neura-shell{
+  max-width:1200px;
+  margin:18px auto;
+  padding:0 14px;
 
-@keyframes fadeUp{
-  from{opacity:0; transform: translateY(8px) scale(.99)}
-  to{opacity:1; transform: translateY(0px) scale(1)}
-}
-.msg.pop-in .bubble{animation: fadeUp .18s ease both}
+  display:grid;
+  grid-template-columns:320px 1fr;
+  gap:14px;
 
-.typing{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  margin:10px 0;
-}
-.typing .bubble{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-.dots{display:inline-flex;gap:6px}
-.dots span{
-  width:6px; height:6px;
-  border-radius:999px;
-  background: rgba(255,255,255,.55);
-  opacity:.5;
-  animation: blink 1s infinite ease-in-out;
-}
-.dots span:nth-child(2){animation-delay:.15s}
-.dots span:nth-child(3){animation-delay:.30s}
-@keyframes blink{
-  0%, 80%, 100%{transform: translateY(0px); opacity:.35}
-  40%{transform: translateY(-3px); opacity:.9}
+  min-height:calc(100vh - 36px);
 }
 
-/* =========================
-   ✅ FIX REAL PC (solo en la App)
-   Requiere: <body class="app-page">
-========================= */
+/* PC: body no scrollea, scrollean paneles */
 .app-page{ overflow:hidden; }
-.app-page .app{
-  height:100vh;
-  display:flex;
-  flex-direction:column;
-}
-.app-page .topbar{ flex:0 0 auto; }
-.app-page .layout{
-  flex:1 1 auto;
-  min-height:0;
-  align-items:stretch;
-}
-.app-page .sidebar{
-  min-height:0;
-  height:100%;
-}
-.app-page .chat-list{
-  min-height:0;
-  overflow:auto;
-}
-.app-page .chat-area{
-  min-height:0;
-  height:100%;
-}
-.app-page .chat{
-  min-height:0;
-  overflow:auto;
-}
+.app-page .neura-shell{ height:100vh; }
+.app-page .neura-shell .sidebar,
+.app-page .neura-shell .chat-area{ height:100%; min-height:0; }
 
-/* En móvil no bloqueamos el scroll del body */
+/* La lista de chats scrollea sola */
+.app-page .neura-shell .chat-list{ overflow:auto; min-height:0; }
+
+/* El chat scrollea solo */
+.app-page .neura-shell .chat{ overflow:auto; min-height:0; }
+
+/* Responsive */
 @media (max-width: 900px){
+  .neura-shell{ grid-template-columns:1fr; min-height:auto; }
   .app-page{ overflow:auto; }
-  .app-page .app{ height:auto; display:block; }
-  .app-page .layout{ min-height:auto; }
 }
