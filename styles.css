@@ -23,10 +23,10 @@ html,body{height:100%}
 body{
   margin:0;
   font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  background:
-    radial-gradient(1200px 700px at 18% 10%, rgba(139,92,246,.18), transparent 55%),
-    radial-gradient(1000px 700px at 90% 20%, rgba(56,189,248,.14), transparent 55%),
-    var(--bg);
+
+  /* ✅ LIMPIO: quitamos el morado global */
+  background: var(--bg);
+
   color:var(--text);
 }
 
@@ -45,7 +45,13 @@ a{color:#c4b5fd}
   align-items:center;
   gap:12px;
   padding:14px 16px;
-  background:var(--panel);
+
+  /* ✅ SOLO ARRIBA: morado/cyan aquí */
+  background:
+    radial-gradient(900px 260px at 18% 0%, rgba(139,92,246,.20), transparent 60%),
+    radial-gradient(900px 260px at 88% 0%, rgba(56,189,248,.14), transparent 60%),
+    var(--panel);
+
   border:1px solid var(--border);
   border-radius:18px;
   box-shadow:var(--shadow);
@@ -194,7 +200,9 @@ a{color:#c4b5fd}
   flex:1;
   overflow:auto;
   padding:14px;
-  background:rgba(0,0,0,.14);
+
+  /* ✅ CHAT LIMPIO: oscuro real (sin “tinte” morado detrás) */
+  background: rgba(0,0,0,.22);
 }
 
 /* Messages */
@@ -301,6 +309,12 @@ input:focus{border-color:rgba(56,189,248,.35)}
   grid-template-columns: 1.1fr .9fr;
   gap:14px;
   align-items:stretch;
+
+  /* ✅ “morado” solo en la parte superior / landing */
+  background:
+    radial-gradient(1200px 520px at 18% 0%, rgba(139,92,246,.18), transparent 60%),
+    radial-gradient(1000px 520px at 90% 0%, rgba(56,189,248,.12), transparent 60%);
+  border-radius:18px;
 }
 
 .badge{
