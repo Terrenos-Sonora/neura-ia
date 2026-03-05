@@ -625,3 +625,42 @@ details p{margin:8px 0 0}
   0%, 80%, 100%{transform: translateY(0px); opacity:.35}
   40%{transform: translateY(-3px); opacity:.9}
 }
+
+/* =========================
+   FIX PC: Sidebar y chat con scroll tipo ChatGPT
+   (Evita que crezca todo)
+========================= */
+
+.neura-app .layout{
+  align-items: stretch;
+  min-height: calc(100vh - 150px);
+}
+
+.neura-app .sidebar{
+  height: calc(100vh - 150px);
+  min-height: 560px;
+  display: flex;
+  flex-direction: column;
+}
+
+.neura-app .side-top{ flex: 0 0 auto; }
+.neura-app .side-bottom{ flex: 0 0 auto; }
+
+.neura-app .chat-list{
+  flex: 1 1 auto;
+  min-height: 0;       /* clave para que el scroll funcione */
+  overflow: auto;      /* ✅ aquí sí scroll */
+}
+
+.neura-app .chat-area{
+  height: calc(100vh - 150px);
+  min-height: 560px;
+  display: flex;
+  flex-direction: column;
+}
+
+.neura-app .chat{
+  flex: 1 1 auto;
+  min-height: 0;       /* clave para que el scroll funcione */
+  overflow: auto;
+}
