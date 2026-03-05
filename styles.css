@@ -218,7 +218,8 @@ textarea:focus{border-color:rgba(34,197,94,.35)}
 .danger{background:rgba(239,68,68,.18);border-color:rgba(239,68,68,.35)}
 .full{width:100%}
 
-.hidden{display:none}
+/* ✅ FIX: hidden siempre gana */
+.hidden{display:none !important;}
 
 /* Modal */
 .modal{

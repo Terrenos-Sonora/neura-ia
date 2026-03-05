@@ -53,31 +53,40 @@ document.addEventListener("DOMContentLoaded", () => {
     saveOpen(openId);
   }
 
-  // ====== MODAL: abrir/cerrar (ARREGLADO) ======
+  // ====== MODAL: abrir/cerrar (INFALIBLE) ======
   function openModal() {
+    if (!modal) return;
     authErr.textContent = "";
     modal.classList.remove("hidden");
+    modal.style.display = "flex"; // respaldo (por si CSS falla)
+    modal.setAttribute("aria-hidden", "false");
     setTimeout(() => emailEl?.focus(), 50);
   }
+
   function closeModal() {
+    if (!modal) return;
     modal.classList.add("hidden");
+    modal.style.display = "none"; // respaldo (por si CSS falla)
+    modal.setAttribute("aria-hidden", "true");
   }
 
-  // Nunca abrir solo
+  // NUNCA abrir solo al cargar
   closeModal();
 
   btnLogin?.addEventListener("click", openModal);
   closeModalX?.addEventListener("click", closeModal);
   closeModalBtn?.addEventListener("click", closeModal);
 
-  // click fuera
+  // click fuera (solo si das click en el fondo)
   modal?.addEventListener("click", (e) => {
     if (e.target === modal) closeModal();
   });
 
   // ESC
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && !modal.classList.contains("hidden")) closeModal();
+    if (e.key === "Escape" && modal && modal.getAttribute("aria-hidden") === "false") {
+      closeModal();
+    }
   });
 
   // ====== UI SEGÚN SESIÓN ======
@@ -287,7 +296,11 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await res.json().catch(() => ({}));
 
       // quitar el "…"
-      if (c.messages.length && c.messages[c.messages.length - 1].role === "assistant" && c.messages[c.messages.length - 1].content === "…") {
+      if (
+        c.messages.length &&
+        c.messages[c.messages.length - 1].role === "assistant" &&
+        c.messages[c.messages.length - 1].content === "…"
+      ) {
         c.messages.pop();
       }
 
@@ -298,7 +311,11 @@ document.addEventListener("DOMContentLoaded", () => {
       saveChats();
       renderMessages(c);
     } catch {
-      if (c.messages.length && c.messages[c.messages.length - 1].role === "assistant" && c.messages[c.messages.length - 1].content === "…") {
+      if (
+        c.messages.length &&
+        c.messages[c.messages.length - 1].role === "assistant" &&
+        c.messages[c.messages.length - 1].content === "…"
+      ) {
         c.messages.pop();
       }
       c.messages.push({
