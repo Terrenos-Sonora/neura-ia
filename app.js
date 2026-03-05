@@ -31,6 +31,53 @@ document.addEventListener("DOMContentLoaded", () => {
   const passEl = $("pass");
   const authErr = $("authErr");
 
+  // ====== PRO UX (Halo + Thinking + Animación) ======
+  const chatArea = document.querySelector(".chat-area");
+  const composer = document.querySelector(".composer");
+
+  function setActiveChat(on) {
+    if (!chatArea) return;
+    chatArea.classList.toggle("is-active", !!on);
+  }
+
+  // Activamos el halo al usar el chat
+  setActiveChat(true);
+  composer?.addEventListener("click", () => setActiveChat(true));
+  msgEl?.addEventListener("focus", () => setActiveChat(true));
+
+  // Indicador "Neura está pensando..."
+  let typingEl = null;
+
+  function showTyping() {
+    if (!chatEl) return;
+    if (typingEl) return;
+
+    typingEl = document.createElement("div");
+    typingEl.className = "msg ai typing pop-in";
+    typingEl.innerHTML = `
+      <div class="bubble">
+        <span class="muted">Neura está pensando</span>
+        <span class="dots" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </span>
+      </div>
+    `;
+    chatEl.appendChild(typingEl);
+    chatEl.scrollTop = chatEl.scrollHeight;
+  }
+
+  function hideTyping() {
+    if (typingEl && typingEl.parentNode) typingEl.parentNode.removeChild(typingEl);
+    typingEl = null;
+  }
+
+  // Animar SOLO el último mensaje renderizado
+  function popLastMessage() {
+    const last = chatEl?.lastElementChild;
+    if (!last) return;
+    last.classList.add("pop-in");
+  }
+
   // ====== SUPABASE CLIENT ======
   let supa = null;
   if (window.supabase?.createClient) {
@@ -40,8 +87,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ====== ESTADO ======
-  const LS_KEY = "amigoia_guest_chats_v1";
-  const LS_OPEN = "amigoia_open_chat_v1";
+  // ✅ Limpio para Neura (nuevas keys)
+  const LS_KEY = "neura_guest_chats_v1";
+  const LS_OPEN = "neura_open_chat_v1";
 
   let chats = loadChats();
   let openId = localStorage.getItem(LS_OPEN) || (chats[0]?.id ?? null);
@@ -233,9 +281,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const c = {
       id: crypto.randomUUID(),
       title,
-      messages: [
-        { role: "assistant", content: "Hola 😊 Soy tu Amigo IA. ¿En qué te ayudo hoy?", ts: now },
-      ],
+      messages: [{ role: "assistant", content: "Hola 😊 Soy Neura. ¿En qué te ayudo hoy?", ts: now }],
       createdAt: now,
       updatedAt: now,
     };
@@ -266,6 +312,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     saveChats();
     renderMessages(c);
+    popLastMessage();
   }
 
   // ====== ENVIAR MENSAJE ======
@@ -276,8 +323,11 @@ document.addEventListener("DOMContentLoaded", () => {
     msgEl.value = "";
     autosize(msgEl);
 
+    // mensaje del usuario
     pushMessage("user", text);
-    pushMessage("assistant", "…");
+
+    // ✅ "Neura está pensando..." (ya NO guardamos "…")
+    showTyping();
 
     const c = getOpenChat();
 
@@ -295,14 +345,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const data = await res.json().catch(() => ({}));
 
-      // quitar el "…"
-      if (
-        c.messages.length &&
-        c.messages[c.messages.length - 1].role === "assistant" &&
-        c.messages[c.messages.length - 1].content === "…"
-      ) {
-        c.messages.pop();
-      }
+      hideTyping();
 
       const reply = data.reply || data.error || "Tuve un detalle técnico 😅";
       c.messages.push({ role: "assistant", content: reply, ts: Date.now() });
@@ -310,14 +353,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       saveChats();
       renderMessages(c);
+      popLastMessage();
     } catch {
-      if (
-        c.messages.length &&
-        c.messages[c.messages.length - 1].role === "assistant" &&
-        c.messages[c.messages.length - 1].content === "…"
-      ) {
-        c.messages.pop();
-      }
+      hideTyping();
+
       c.messages.push({
         role: "assistant",
         content: "Ahorita tuve un detalle técnico 😅 (revisa que /api/chat exista en Pages).",
@@ -326,6 +365,7 @@ document.addEventListener("DOMContentLoaded", () => {
       c.updatedAt = Date.now();
       saveChats();
       renderMessages(c);
+      popLastMessage();
     }
   }
 
